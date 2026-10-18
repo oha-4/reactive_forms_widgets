@@ -102,7 +102,19 @@ The names are prefixed so that both packages can be imported in the same file wi
 
 1. Migrate the app from `package:flutter/material.dart` to `package:material_ui/material_ui.dart`.
 2. Add `reactive_material_ui` and import `package:reactive_material_ui/reactive_material_ui.dart` next to `package:reactive_forms/reactive_forms.dart`.
-3. Rename the widgets following the table above. Constructor parameters are the same.
+3. Rename the widgets following the table above. Constructor parameters are the same, except for the differences listed below.
 4. `FormControl<TimeOfDay>` must use the `TimeOfDay` of `material_ui`. If you passed `TimeOfDayValueAccessor()` explicitly, replace it with `MaterialTimeOfDayValueAccessor()`.
 
 Form models, validators and the non-Material widgets of `reactive_forms` stay unchanged.
+
+### Parameter differences
+
+`reactive_material_ui` only uses the non-deprecated `material_ui` APIs, so a few things differ from `reactive_forms`:
+
+| Widget | reactive_forms | reactive_material_ui |
+| --- | --- | --- |
+| `ReactiveMaterialSwitch`, `ReactiveMaterialSwitchListTile` (and `.adaptive`) | `activeColor` | `activeThumbColor` (use `activeTrackColor` for the track) |
+| `ReactiveMaterialRadio`, `ReactiveMaterialRadioListTile` | inner `Radio` / `RadioListTile` uses `groupValue` + `onChanged` | inner widget is wrapped in a `RadioGroup` bound to the control. The widget API (`formControlName`, `value`, `onChanged`, ...) is the same; each widget has its own `RadioGroup`, so, as with `reactive_forms`, arrow keys do not move the selection between radios |
+| `ReactiveMaterialDropdownField` | inner `DropdownButtonFormField` uses `value` | inner `DropdownButtonFormField` uses `initialValue` and is kept in sync with the control. The widget API is the same |
+
+Tests that inspect the inner widgets need updating too: read the group value from `RadioGroup.groupValue` instead of `Radio.groupValue`, and check `Radio.enabled` / `RadioListTile.enabled` instead of `onChanged == null`.

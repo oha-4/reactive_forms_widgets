@@ -10,3 +10,6 @@
   `ReactiveMaterialSlider`, `ReactiveMaterialDatePicker`,
   `ReactiveMaterialTimePicker` and `MaterialTimeOfDayValueAccessor`.
 * Support `reactive_forms: 18.x`.
+* Uses only the non-deprecated `material_ui` APIs: switches take
+  `activeThumbColor` instead of `activeColor`, radios are driven by a
+  `RadioGroup`, and the dropdown passes the control value as `initialValue`.
