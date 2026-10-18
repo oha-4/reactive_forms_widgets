@@ -11,6 +11,11 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// This is a convenience widget that wraps a [Radio] widget in a
 /// [ReactiveMaterialRadio].
 ///
+/// The inner [Radio] is wrapped in its own [RadioGroup] whose
+/// [RadioGroup.groupValue] is the control value, so every
+/// [ReactiveMaterialRadio] bound to the same control behaves as one group
+/// without having to add a [RadioGroup] yourself.
+///
 /// The [formControlName] is required to bind this [ReactiveMaterialRadio]
 /// to a [FormControl].
 ///
@@ -51,29 +56,31 @@ class ReactiveMaterialRadio<T> extends ReactiveFocusableFormField<T, T> {
     ReactiveFormFieldCallback<T>? onChanged,
   }) : super(
          builder: (field) {
-           return Radio<T>(
-             value: value,
-             // ignore: deprecated_member_use
+           return RadioGroup<T>(
              groupValue: field.value,
-             activeColor: activeColor,
-             focusColor: focusColor,
-             hoverColor: hoverColor,
-             fillColor: fillColor,
-             overlayColor: overlayColor,
-             mouseCursor: mouseCursor,
-             splashRadius: splashRadius,
-             materialTapTargetSize: materialTapTargetSize,
-             visualDensity: visualDensity,
-             autofocus: autofocus,
-             toggleable: toggleable,
-             focusNode: field.focusNode,
-             // ignore: deprecated_member_use
-             onChanged: field.control.enabled
-                 ? (value) {
-                     field.didChange(value);
-                     onChanged?.call(field.control);
-                   }
-                 : null,
+             onChanged: (value) {
+               if (field.control.disabled) {
+                 return;
+               }
+               field.didChange(value);
+               onChanged?.call(field.control);
+             },
+             child: Radio<T>(
+               value: value,
+               enabled: field.control.enabled,
+               activeColor: activeColor,
+               focusColor: focusColor,
+               hoverColor: hoverColor,
+               fillColor: fillColor,
+               overlayColor: overlayColor,
+               mouseCursor: mouseCursor,
+               splashRadius: splashRadius,
+               materialTapTargetSize: materialTapTargetSize,
+               visualDensity: visualDensity,
+               autofocus: autofocus,
+               toggleable: toggleable,
+               focusNode: field.focusNode,
+             ),
            );
          },
        );

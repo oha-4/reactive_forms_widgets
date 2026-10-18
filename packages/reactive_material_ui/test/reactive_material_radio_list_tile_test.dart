@@ -1,13 +1,12 @@
-// RadioListTile.groupValue/onChanged are deprecated in favor of RadioGroup,
-// but ReactiveMaterialRadioListTile keeps the upstream reactive_forms API on
-// purpose.
-// ignore_for_file: deprecated_member_use
-
 import 'package:reactive_material_ui/reactive_material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'reactive_material_radio_list_tile_testing_widget.dart';
+
+/// Gets the group value of the [RadioGroup] that wraps the radio.
+bool? groupValueOf(WidgetTester tester) =>
+    tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).groupValue;
 
 void main() {
   group('ReactiveMaterialRadioListTile Tests', () {
@@ -23,14 +22,7 @@ void main() {
       await tester.pumpWidget(ReactiveRadioListTileTestingWidget(form: form));
 
       // Expect radio group value is true
-      final radioType = const Radio<bool>(
-        value: false,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.groupValue, true);
+      expect(groupValueOf(tester), true);
     });
 
     testWidgets('Radio init with false if control init in false', (
@@ -45,14 +37,7 @@ void main() {
       await tester.pumpWidget(ReactiveRadioListTileTestingWidget(form: form));
 
       // Expect radio group value is false
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.groupValue, false);
+      expect(groupValueOf(tester), false);
     });
 
     testWidgets(
@@ -71,14 +56,7 @@ void main() {
         await tester.pump();
 
         // Expect radio group value is true
-        final radioType = const Radio<bool>(
-          value: false,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
-        final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-        expect(radio.groupValue, true);
+        expect(groupValueOf(tester), true);
       },
     );
 
@@ -98,14 +76,7 @@ void main() {
         await tester.pump();
 
         // Expect radio group value is true
-        final radioType = const Radio<bool>(
-          value: true,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
-        final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-        expect(radio.groupValue, false);
+        expect(groupValueOf(tester), false);
       },
     );
 
@@ -126,7 +97,7 @@ void main() {
       final tile = tester.widget<RadioListTile<bool>>(
         find.byType(RadioListTile<bool>),
       );
-      expect(tile.onChanged, null);
+      expect(tile.enabled, false);
     });
 
     testWidgets('Disable a control disable Radio', (WidgetTester tester) async {
@@ -148,7 +119,7 @@ void main() {
       final tile = tester.widget<RadioListTile<bool>>(
         find.byType(RadioListTile<bool>),
       );
-      expect(tile.onChanged, null);
+      expect(tile.enabled, false);
     });
 
     testWidgets('Enable a control enable Radio', (WidgetTester tester) async {
@@ -170,7 +141,7 @@ void main() {
       final tile = tester.widget<RadioListTile<bool>>(
         find.byType(RadioListTile<bool>),
       );
-      expect(tile.onChanged != null, true);
+      expect(tile.enabled, true);
     });
 
     testWidgets('Call FormControl.focus() request focus on field', (
@@ -336,12 +307,8 @@ void main() {
       );
 
       // When: user change switch value
-      final widget = tester
-          .widgetList<RadioListTile<bool>>(find.byType(RadioListTile<bool>))
-          .map((widget) => widget)
-          .toList()
-          .first;
-      widget.onChanged!(true);
+      await tester.tap(find.byType(RadioListTile<bool>));
+      await tester.pump();
 
       // Then: onChanged callback is called
       expect(callbackCalled, true);

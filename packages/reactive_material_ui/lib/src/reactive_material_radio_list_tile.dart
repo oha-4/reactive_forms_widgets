@@ -11,6 +11,11 @@ import 'package:reactive_forms/reactive_forms.dart';
 /// This is a convenience widget that wraps a [RadioListTile] widget in a
 /// [ReactiveMaterialRadioListTile].
 ///
+/// The inner [RadioListTile] is wrapped in its own [RadioGroup] whose
+/// [RadioGroup.groupValue] is the control value, so every
+/// [ReactiveMaterialRadioListTile] bound to the same control behaves as one group
+/// without having to add a [RadioGroup] yourself.
+///
 /// The [formControlName] is required to bind this [ReactiveMaterialRadioListTile]
 /// to a [FormControl].
 ///
@@ -62,42 +67,44 @@ class ReactiveMaterialRadioListTile<T>
     ValueChanged<bool>? onFocusChange,
   }) : super(
          builder: (field) {
-           return RadioListTile<T>(
-             value: value,
-             // ignore: deprecated_member_use
+           return RadioGroup<T>(
              groupValue: field.value,
-             mouseCursor: mouseCursor,
-             activeColor: activeColor,
-             hoverColor: hoverColor,
-             overlayColor: overlayColor,
-             materialTapTargetSize: materialTapTargetSize,
-             fillColor: fillColor,
-             splashRadius: splashRadius,
-             onFocusChange: onFocusChange,
-             selectedTileColor: selectedTileColor,
-             tileColor: tileColor,
-             title: title,
-             subtitle: subtitle,
-             isThreeLine: isThreeLine,
-             dense: dense,
-             secondary: secondary,
-             controlAffinity: controlAffinity,
-             contentPadding: contentPadding,
-             toggleable: toggleable,
-             shape: shape,
-             selected: selected,
-             autofocus: autofocus,
-             visualDensity: visualDensity,
-             focusNode: field.focusNode,
-             enableFeedback: enableFeedback,
-             radioScaleFactor: radioScaleFactor,
-             // ignore: deprecated_member_use
-             onChanged: field.control.enabled
-                 ? (value) {
-                     field.didChange(value);
-                     onChanged?.call(field.control);
-                   }
-                 : null,
+             onChanged: (value) {
+               if (field.control.disabled) {
+                 return;
+               }
+               field.didChange(value);
+               onChanged?.call(field.control);
+             },
+             child: RadioListTile<T>(
+               value: value,
+               enabled: field.control.enabled,
+               mouseCursor: mouseCursor,
+               activeColor: activeColor,
+               hoverColor: hoverColor,
+               overlayColor: overlayColor,
+               materialTapTargetSize: materialTapTargetSize,
+               fillColor: fillColor,
+               splashRadius: splashRadius,
+               onFocusChange: onFocusChange,
+               selectedTileColor: selectedTileColor,
+               tileColor: tileColor,
+               title: title,
+               subtitle: subtitle,
+               isThreeLine: isThreeLine,
+               dense: dense,
+               secondary: secondary,
+               controlAffinity: controlAffinity,
+               contentPadding: contentPadding,
+               toggleable: toggleable,
+               shape: shape,
+               selected: selected,
+               autofocus: autofocus,
+               visualDensity: visualDensity,
+               focusNode: field.focusNode,
+               enableFeedback: enableFeedback,
+               radioScaleFactor: radioScaleFactor,
+             ),
            );
          },
        );

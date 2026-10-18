@@ -1,12 +1,12 @@
-// Radio.groupValue/onChanged are deprecated in favor of RadioGroup, but
-// ReactiveMaterialRadio keeps the upstream reactive_forms API on purpose.
-// ignore_for_file: deprecated_member_use
-
 import 'package:reactive_material_ui/reactive_material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'reactive_material_radio_testing_widget.dart';
+
+/// Gets the group value of the [RadioGroup] that wraps the radio.
+bool? groupValueOf(WidgetTester tester) =>
+    tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).groupValue;
 
 void main() {
   group('ReactiveMaterialRadio Tests', () {
@@ -22,14 +22,7 @@ void main() {
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
       // Expect radio group value is true
-      final radioType = const Radio<bool>(
-        value: false,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.groupValue, true);
+      expect(groupValueOf(tester), true);
     });
 
     testWidgets('Radio init with false if control init in false', (
@@ -44,15 +37,7 @@ void main() {
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
       // Expect radio group value is false
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-
-      expect(radio.groupValue, false);
+      expect(groupValueOf(tester), false);
     });
 
     testWidgets(
@@ -71,14 +56,7 @@ void main() {
         await tester.pump();
 
         // Expect radio group value is true
-        final radioType = const Radio<bool>(
-          value: false,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
-        final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-        expect(radio.groupValue, true);
+        expect(groupValueOf(tester), true);
       },
     );
 
@@ -98,14 +76,7 @@ void main() {
         await tester.pump();
 
         // Expect radio group value is true
-        final radioType = const Radio<bool>(
-          value: true,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
-        final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-        expect(radio.groupValue, false);
+        expect(groupValueOf(tester), false);
       },
     );
 
@@ -121,14 +92,8 @@ void main() {
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
       // Then: the radio is disabled
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.onChanged, null);
+      final radio = tester.firstWidget<Radio<bool>>(find.byType(Radio<bool>));
+      expect(radio.enabled, false);
     });
 
     testWidgets('Disable a control disable Radio', (WidgetTester tester) async {
@@ -143,14 +108,8 @@ void main() {
       await tester.pump();
 
       // Then: the radio is disabled
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.onChanged, null);
+      final radio = tester.firstWidget<Radio<bool>>(find.byType(Radio<bool>));
+      expect(radio.enabled, false);
     });
 
     testWidgets('Enable a control enable Radio', (WidgetTester tester) async {
@@ -167,14 +126,8 @@ void main() {
       await tester.pump();
 
       // Then: the radio is enabled
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
-      final radio = tester.firstWidget<Radio<bool>>(find.byType(radioType));
-      expect(radio.onChanged != null, true);
+      final radio = tester.firstWidget<Radio<bool>>(find.byType(Radio<bool>));
+      expect(radio.enabled, true);
     });
 
     testWidgets('Call FormControl.focus() request focus on field', (
@@ -186,14 +139,10 @@ void main() {
       // And: a widget that is bind to the form
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
       // Expect: that the field has no focus
-      var radioField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      var radioField = tester.firstWidget<Radio<bool>>(
+        find.byType(Radio<bool>),
+      );
       expect(radioField.focusNode?.hasFocus, false);
 
       // When: call FormControl.focus()
@@ -201,7 +150,7 @@ void main() {
       await tester.pump();
 
       // Then: the reactive field is focused
-      radioField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      radioField = tester.firstWidget<Radio<bool>>(find.byType(Radio<bool>));
       expect(radioField.focusNode?.hasFocus, true);
     });
 
@@ -214,14 +163,10 @@ void main() {
       // And: a widget that is bind to the form
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
       // And: the field has focused
-      var radioField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      var radioField = tester.firstWidget<Radio<bool>>(
+        find.byType(Radio<bool>),
+      );
       radioField.focusNode?.requestFocus();
       await tester.pump();
       expect(radioField.focusNode?.hasFocus, true);
@@ -231,7 +176,7 @@ void main() {
       await tester.pump();
 
       // Then: the reactive field is unfocused
-      radioField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      radioField = tester.firstWidget<Radio<bool>>(find.byType(Radio<bool>));
       expect(radioField.focusNode?.hasFocus, false);
     });
 
@@ -244,14 +189,10 @@ void main() {
       // And: a widget that is bind to the form
       await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
       // And: the field has focused
-      var radioField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      var radioField = tester.firstWidget<Radio<bool>>(
+        find.byType(Radio<bool>),
+      );
       radioField.focusNode?.requestFocus();
       await tester.pump();
       expect(radioField.focusNode?.hasFocus, true);
@@ -274,14 +215,10 @@ void main() {
         // And: a widget that is bind to the form
         await tester.pumpWidget(ReactiveRadioTestingWidget(form: form));
 
-        final radioType = const Radio<bool>(
-          value: true,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
         // And: the field has focused
-        var textField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+        var textField = tester.firstWidget<Radio<bool>>(
+          find.byType(Radio<bool>),
+        );
         textField.focusNode?.requestFocus();
         await tester.pump();
         expect(textField.focusNode?.hasFocus, true);
@@ -306,14 +243,10 @@ void main() {
         ReactiveRadioTestingWidget(form: form, focusNode: focusNode),
       );
 
-      final radioType = const Radio<bool>(
-        value: true,
-        groupValue: null,
-        onChanged: null,
-      ).runtimeType;
-
       // Expect: field has the provided focus node
-      final textField = tester.firstWidget<Radio<bool>>(find.byType(radioType));
+      final textField = tester.firstWidget<Radio<bool>>(
+        find.byType(Radio<bool>),
+      );
       expect(textField.focusNode, focusNode);
     });
 
@@ -332,16 +265,10 @@ void main() {
           ReactiveRadioTestingWidget(form: form, focusNode: focusNode),
         );
 
-        final radioType = const Radio<bool>(
-          value: true,
-          groupValue: null,
-          onChanged: null,
-        ).runtimeType;
-
         // Expect: field has the provided focus node and is the same of the
         // focus controller
         final textField = tester.firstWidget<Radio<bool>>(
-          find.byType(radioType),
+          find.byType(Radio<bool>),
         );
         expect(textField.focusNode, nameControl.focusController?.focusNode);
       },
@@ -370,12 +297,8 @@ void main() {
       );
 
       // When: user change switch value
-      final widget = tester
-          .widgetList<Radio<bool>>(find.byType(Radio<bool>))
-          .map((widget) => widget)
-          .toList()
-          .first;
-      widget.onChanged!(true);
+      await tester.tap(find.byType(Radio<bool>));
+      await tester.pump();
 
       // Then: onChanged callback is called
       expect(callbackCalled, true);
