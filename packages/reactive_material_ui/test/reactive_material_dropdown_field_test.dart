@@ -419,4 +419,97 @@ void main() {
       },
     );
   });
+
+  group('ReactiveMaterialDropdownField control synchronization', () {
+    /// Gets the item shown as selected by the dropdown button.
+    String? selectedItem(WidgetTester tester) {
+      final button = tester.widget<DropdownButton<String>>(
+        find.byType(DropdownButton<String>),
+      );
+      return button.value;
+    }
+
+    testWidgets('Dropdown reflects programmatic control changes', (
+      WidgetTester tester,
+    ) async {
+      // Given: a dropdown bound to a control
+      final form = FormGroup({'dropdown': FormControl<String>(value: 'a')});
+      await tester.pumpWidget(
+        ReactiveDropdownTestingWidget(form: form, items: ['a', 'b', 'c']),
+      );
+      expect(selectedItem(tester), 'a');
+
+      // When: the control changes several times
+      form.control('dropdown').value = 'c';
+      await tester.pump();
+
+      // Then: the dropdown shows the new value
+      expect(selectedItem(tester), 'c');
+      expect(find.text('c'), findsOneWidget);
+
+      // And: a null value clears the dropdown
+      form.control('dropdown').value = null;
+      await tester.pump();
+      expect(selectedItem(tester), null);
+
+      // And: a value that is not an item clears the dropdown
+      form.control('dropdown').value = 'b';
+      await tester.pump();
+      form.control('dropdown').value = 'unknown';
+      await tester.pump();
+      expect(selectedItem(tester), null);
+    });
+
+    testWidgets('Selecting an item updates the control and keeps focus', (
+      WidgetTester tester,
+    ) async {
+      // Given: a dropdown bound to a control
+      final control = FormControl<String>(value: 'a');
+      final form = FormGroup({'dropdown': control});
+      await tester.pumpWidget(
+        ReactiveDropdownTestingWidget(form: form, items: ['a', 'b', 'c']),
+      );
+
+      // When: the user selects another item
+      await tester.tap(find.text('a'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('b').last);
+      await tester.pumpAndSettle();
+
+      // Then: the control and the dropdown have the selected value
+      expect(control.value, 'b');
+      expect(selectedItem(tester), 'b');
+
+      // And: the dropdown keeps the focus
+      expect(control.focusController?.focusNode.hasFocus, true);
+    });
+
+    testWidgets('Dropdown shows the control value when onChanged reverts it', (
+      WidgetTester tester,
+    ) async {
+      // Given: a dropdown whose onChanged rejects 'b'
+      final form = FormGroup({'dropdown': FormControl<String>(value: 'a')});
+      await tester.pumpWidget(
+        ReactiveDropdownTestingWidget(
+          form: form,
+          items: ['a', 'b', 'c'],
+          onChanged: (control) {
+            if (control.value == 'b') {
+              control.value = 'a';
+            }
+          },
+        ),
+      );
+
+      // When: the user selects 'b'
+      await tester.tap(find.text('a'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('b').last);
+      await tester.pumpAndSettle();
+
+      // Then: the control and the dropdown keep 'a'
+      expect(form.control('dropdown').value, 'a');
+      expect(selectedItem(tester), 'a');
+    });
+  });
 }

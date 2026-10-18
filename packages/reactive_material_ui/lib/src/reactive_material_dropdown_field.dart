@@ -9,6 +9,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 /// A reactive widget that wraps a [DropdownButtonFormField].
+///
+/// The control value is passed as [DropdownButtonFormField.initialValue].
+/// [DropdownButtonFormField] updates its selected item whenever
+/// `initialValue` changes, so programmatic changes of the control are shown.
+/// If a selection made by the user is changed by the control (e.g. reverted
+/// in [onChanged]), the field is synchronized back to the control value.
 class ReactiveMaterialDropdownField<T>
     extends ReactiveFocusableFormField<T, T> {
   /// Creates a [DropdownButton] widget wrapped in an [InputDecorator].
@@ -63,15 +69,12 @@ class ReactiveMaterialDropdownField<T>
   }) : assert(itemHeight == null || itemHeight > 0),
        super(
          builder: (ReactiveFormFieldState<T, T> field) {
+           final state = field as _ReactiveMaterialDropdownFieldState<T>;
            final effectiveDecoration = decoration.applyDefaults(
              Theme.of(field.context).inputDecorationTheme,
            );
 
-           var effectiveValue = field.value;
-           if (effectiveValue != null &&
-               !items.any((item) => item.value == effectiveValue)) {
-             effectiveValue = null;
-           }
+           final effectiveValue = _effectiveValue(field.value, items);
 
            final isDisabled = readOnly || field.control.disabled;
            var effectiveDisabledHint = disabledHint;
@@ -88,8 +91,8 @@ class ReactiveMaterialDropdownField<T>
            }
 
            return DropdownButtonFormField<T>(
-             // ignore: deprecated_member_use
-             value: effectiveValue,
+             key: state._fieldKey,
+             initialValue: effectiveValue,
              decoration: effectiveDecoration.copyWith(
                errorText: field.errorText,
                enabled: !isDisabled,
@@ -120,10 +123,52 @@ class ReactiveMaterialDropdownField<T>
              onChanged: isDisabled
                  ? null
                  : (value) {
+                     if (state._isSynchronizing) {
+                       return;
+                     }
                      field.didChange(value);
                      onChanged?.call(field.control);
+                     state._synchronize(_effectiveValue(field.value, items));
                    },
            );
          },
        );
+
+  /// Returns [value] if one of the [items] has it, otherwise null.
+  static T? _effectiveValue<T>(T? value, List<DropdownMenuItem<T>> items) {
+    if (value != null && !items.any((item) => item.value == value)) {
+      return null;
+    }
+    return value;
+  }
+
+  @override
+  ReactiveFormFieldState<T, T> createState() =>
+      _ReactiveMaterialDropdownFieldState<T>();
+}
+
+class _ReactiveMaterialDropdownFieldState<T>
+    extends ReactiveFocusableFormFieldState<T, T> {
+  final _fieldKey = GlobalKey<FormFieldState<T>>();
+  bool _isSynchronizing = false;
+
+  /// Shows [value] in the [DropdownButtonFormField] if it is showing another
+  /// one.
+  ///
+  /// [DropdownButtonFormField] only follows `initialValue` when it changes
+  /// between builds, so a user selection that the control did not keep would
+  /// stay visible without this.
+  void _synchronize(T? value) {
+    final fieldState = _fieldKey.currentState;
+    if (fieldState == null || fieldState.value == value) {
+      return;
+    }
+
+    _isSynchronizing = true;
+    try {
+      fieldState.didChange(value);
+    } finally {
+      _isSynchronizing = false;
+    }
+  }
 }
