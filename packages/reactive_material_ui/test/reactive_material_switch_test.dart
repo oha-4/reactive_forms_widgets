@@ -433,4 +433,37 @@ void main() {
     // And: control has the right value
     expect(form.control(reactiveSwitchTestingName).value, true);
   });
+
+  testWidgets('Switch forwards activeThumbColor', (WidgetTester tester) async {
+    // Given: a form with a control
+    final form = FormGroup({reactiveSwitchTestingName: FormControl<bool>()});
+
+    // And: switches with an activeThumbColor
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: ReactiveForm(
+            formGroup: form,
+            child: Column(
+              children: [
+                ReactiveMaterialSwitch(
+                  formControlName: reactiveSwitchTestingName,
+                  activeThumbColor: Colors.red,
+                ),
+                ReactiveMaterialSwitch.adaptive(
+                  formControlName: reactiveSwitchTestingName,
+                  activeThumbColor: Colors.green,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Expect: the inner Switch widgets receive the colors
+    final switches = tester.widgetList<Switch>(find.byType(Switch)).toList();
+    expect(switches.first.activeThumbColor, Colors.red);
+    expect(switches.last.activeThumbColor, Colors.green);
+  });
 }

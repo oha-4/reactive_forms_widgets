@@ -34,7 +34,7 @@ class ReactiveMaterialSwitchListTile
     super.formControlName,
     super.formControl,
     Color? tileColor,
-    Color? activeColor,
+    Color? activeThumbColor,
     Color? activeTrackColor,
     Color? inactiveThumbColor,
     Color? inactiveTrackColor,
@@ -72,8 +72,7 @@ class ReactiveMaterialSwitchListTile
          builder: (field) {
            return SwitchListTile(
              value: field.value ?? false,
-             // ignore: deprecated_member_use
-             activeColor: activeColor,
+             activeThumbColor: activeThumbColor,
              activeTrackColor: activeTrackColor,
              inactiveThumbColor: inactiveThumbColor,
              inactiveTrackColor: inactiveTrackColor,
@@ -136,7 +135,7 @@ class ReactiveMaterialSwitchListTile
     super.key,
     super.formControlName,
     super.formControl,
-    Color? activeColor,
+    Color? activeThumbColor,
     Color? activeTrackColor,
     Color? inactiveThumbColor,
     Color? inactiveTrackColor,
@@ -176,8 +175,7 @@ class ReactiveMaterialSwitchListTile
          builder: (field) {
            return SwitchListTile.adaptive(
              value: field.value ?? false,
-             // ignore: deprecated_member_use
-             activeColor: activeColor,
+             activeThumbColor: activeThumbColor,
              activeTrackColor: activeTrackColor,
              inactiveThumbColor: inactiveThumbColor,
              inactiveTrackColor: inactiveTrackColor,

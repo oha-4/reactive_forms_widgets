@@ -492,4 +492,41 @@ void main() {
 
     expect(widget.focusNode?.hasFocus, true);
   });
+
+  testWidgets('SwitchListTile forwards activeThumbColor', (
+    WidgetTester tester,
+  ) async {
+    // Given: a form with a control
+    final form = FormGroup({'switch': FormControl<bool>()});
+
+    // And: switch list tiles with an activeThumbColor
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: ReactiveForm(
+            formGroup: form,
+            child: Column(
+              children: [
+                ReactiveMaterialSwitchListTile(
+                  formControlName: 'switch',
+                  activeThumbColor: Colors.red,
+                ),
+                ReactiveMaterialSwitchListTile.adaptive(
+                  formControlName: 'switch',
+                  activeThumbColor: Colors.green,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Expect: the inner SwitchListTile widgets receive the colors
+    final tiles = tester
+        .widgetList<SwitchListTile>(find.byType(SwitchListTile))
+        .toList();
+    expect(tiles.first.activeThumbColor, Colors.red);
+    expect(tiles.last.activeThumbColor, Colors.green);
+  });
 }

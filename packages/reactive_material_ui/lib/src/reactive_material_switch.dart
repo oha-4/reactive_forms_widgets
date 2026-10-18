@@ -40,7 +40,7 @@ class ReactiveMaterialSwitch extends ReactiveFocusableFormField<bool, bool> {
     super.formControlName,
     super.formControl,
     super.focusNode,
-    Color? activeColor,
+    Color? activeThumbColor,
     Color? activeTrackColor,
     Color? inactiveThumbColor,
     Color? inactiveTrackColor,
@@ -68,8 +68,7 @@ class ReactiveMaterialSwitch extends ReactiveFocusableFormField<bool, bool> {
          builder: (field) {
            return Switch(
              value: field.value ?? false,
-             // ignore: deprecated_member_use
-             activeColor: activeColor,
+             activeThumbColor: activeThumbColor,
              trackOutlineColor: trackOutlineColor,
              thumbIcon: thumbIcon,
              onFocusChange: onFocusChange,
@@ -128,7 +127,7 @@ class ReactiveMaterialSwitch extends ReactiveFocusableFormField<bool, bool> {
     super.formControlName,
     super.formControl,
     super.focusNode,
-    Color? activeColor,
+    Color? activeThumbColor,
     Color? activeTrackColor,
     Color? inactiveThumbColor,
     Color? inactiveTrackColor,
@@ -157,8 +156,7 @@ class ReactiveMaterialSwitch extends ReactiveFocusableFormField<bool, bool> {
          builder: (field) {
            return Switch.adaptive(
              value: field.value ?? false,
-             // ignore: deprecated_member_use
-             activeColor: activeColor,
+             activeThumbColor: activeThumbColor,
              activeTrackColor: activeTrackColor,
              inactiveThumbColor: inactiveThumbColor,
              inactiveTrackColor: inactiveTrackColor,
