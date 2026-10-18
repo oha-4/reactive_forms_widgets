@@ -6,10 +6,16 @@ Wrapper around [material_ui](https://pub.dev/packages/material_ui) input widgets
 
 Since Flutter 3.47 the Material library is published as the standalone official package [`material_ui`](https://pub.dev/packages/material_ui), and `package:flutter/material.dart` is going to be removed from the SDK.
 
-The Material input widgets shipped by `reactive_forms` (`ReactiveTextField`, `ReactiveCheckbox`, ...) are still built on `package:flutter/material.dart`. Their types are different from the ones of `material_ui`, so an app that migrated to `package:material_ui` gets type errors such as:
+The Material input widgets shipped by `reactive_forms` (`ReactiveTextField`, `ReactiveCheckbox`, ...) are still built on `package:flutter/material.dart`, which defines separate classes with the same names as `material_ui`. In an app that migrated to `package:material_ui`:
+
+- the widgets throw `No Material widget found` at runtime, because the `Material` ancestor of the app is the one of `material_ui`;
+- passing a `decoration` does not compile:
 
 ```
-The argument type 'InputDecoration' (material_ui) can't be assigned to the parameter type 'InputDecoration' (flutter/material.dart).
+error • The argument type 'InputDecoration' can't be assigned to the
+parameter type 'InputDecoration'.
+ - one is from 'package:material_ui/src/input_decorator.dart'
+ - the other from 'flutter/lib/src/material/input_decorator.dart'
 ```
 
 See [joanpablo/reactive_forms#507](https://github.com/joanpablo/reactive_forms/issues/507).
